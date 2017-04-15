@@ -23,7 +23,7 @@ app.use((req, res) => {
         console.log(folder);
         fs.writeFile(path.join(folder, 'main.proto'), req.body.body, function (err) {
             if (!err) {
-                const p = spawn('protoc', ['main.proto', '--js_out=.', '--cpp_out=.', '--java_out=.'], {
+                const p = spawn('protoc', ['main.proto', '--js_out=.', '--cpp_out=.', '--java_out=.', '--python_out=.', '--ruby_out=.'], {
                     cwd: folder
                 });
                 p.stdout.on('data', (data) => {
@@ -62,8 +62,44 @@ app.use((req, res) => {
                             {
                                 expand: true,
                                 cwd: folder,
-                                src: ['**/*.java', '**/*.cc', '**/*.h', "**/*.js"],
-                                dest: 'source',
+                                src: ['**/*.java'],
+                                dest: 'java',
+                                dot: true
+                            }
+                        ]);
+                        archive.bulk([
+                            {
+                                expand: true,
+                                cwd: folder,
+                                src: ['**/*.h', '**/*.cc'],
+                                dest: 'cpp',
+                                dot: true
+                            }
+                        ]);
+                        archive.bulk([
+                            {
+                                expand: true,
+                                cwd: folder,
+                                src: ['**/*.js'],
+                                dest: 'js',
+                                dot: true
+                            }
+                        ]);
+                        archive.bulk([
+                            {
+                                expand: true,
+                                cwd: folder,
+                                src: ['**/*.py'],
+                                dest: 'python',
+                                dot: true
+                            }
+                        ]);
+                        archive.bulk([
+                            {
+                                expand: true,
+                                cwd: folder,
+                                src: ['**/*.rb'],
+                                dest: 'ruby',
                                 dot: true
                             }
                         ]);
