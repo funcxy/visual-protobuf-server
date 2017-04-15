@@ -103,6 +103,15 @@ app.use((req, res) => {
                                 dot: true
                             }
                         ]);
+                        archive.bulk([
+                            {
+                                expand: true,
+                                cwd: folder,
+                                src: ['**/*.proto'],
+                                dest: 'proto',
+                                dot: true
+                            }
+                        ]);
                         archive.finalize();
 
                     }
