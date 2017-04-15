@@ -32,6 +32,7 @@ app.use((req, res) => {
 
                 p.stderr.on('data', (data) => {
                     console.log(`stderr: ${data}`);
+                    res.write(data);
                 });
 
                 p.on('close', (code) => {
@@ -113,7 +114,8 @@ app.use((req, res) => {
                             }
                         ]);
                         archive.finalize();
-
+                    } else {
+                        res.end();
                     }
                     console.log(`child process exited with code ${code}`);
                 });
