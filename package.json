@@ -1,0 +1,19 @@
+{
+  "name": "visual-protobuf-server",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm test"
+  },
+  "author": "zccz14",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^1.3.0",
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
+    "express": "^4.15.2",
+    "koa": "^2.2.0"
+  }
+}
