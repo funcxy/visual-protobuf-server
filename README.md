@@ -5,6 +5,7 @@ Related to [Visual Protocol Buffer](https://github.com/funcxy/visual-protobuf).
 # Get started
 
 ```
+$ mkdir worker
 $ npm install
 $ npm start
 ```
