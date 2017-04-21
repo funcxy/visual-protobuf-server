@@ -1,0 +1,48 @@
+{
+    "cpp": {
+        "src": ["*.pb.cc", "*.pb.h"],
+        "option": "cpp",
+        "dest": "cpp"
+    },
+    "cshape": {
+        "src": ["*.cs"],
+        "option": "cshape",
+        "dest": "cshape"
+    },
+    "java": {
+        "src": ["*.java"],
+        "option": "java",
+        "dest": "java"
+    },
+    "javanano": {
+        "src": ["*.java"],
+        "srcPath": "nano",
+        "option": "javanano",
+        "dest": "javanano"
+    },
+    "js": {
+        "src": ["*.js"],
+        "option": "js",
+        "dest": "js"
+    },
+    "objc": {
+        "src": ["*.pbobjc.h", "*.pbobjc.m"],
+        "option": "objc",
+        "dest": "objc"
+    },
+    "php": {
+        "src": ["**/*.php"],
+        "option": "php",
+        "dest": "php"
+    },
+    "python": {
+        "src": ["*.py"],
+        "option": "python",
+        "dest": "python"
+    },
+    "ruby": {
+        "src": ["*.rb"],
+        "option": "ruby",
+        "dest": "ruby"
+    }
+}

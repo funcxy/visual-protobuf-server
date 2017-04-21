@@ -6,24 +6,26 @@ const path = require('path');
 const fs = require('fs');
 const zlib = require('zlib');
 const archiver = require('archiver');
-
+const origin = require('./origin.json');
 const app = express();
 // ALlow Origin
 app.use(cors({
-    origin: [
-        'http://localhost:3000'
-    ],
+    origin: [/localhost/, ...origin],
     credentials: true
 }));
 
 app.use(bodyParser.json());
 
+const languages = require('./languages.json');
+
 app.use((req, res) => {
+    let { title = 'main', body, targets } = req.body;
+    let targetList = Object.keys(targets).filter(v => targets[v]).map(v => languages[v]).filter(v => v !== undefined);
     fs.mkdtemp(path.join(__dirname, 'worker/'), function (err, folder) {
         console.log(folder);
-        fs.writeFile(path.join(folder, 'main.proto'), req.body.body, function (err) {
+        fs.writeFile(path.join(folder, `${title}.proto`), req.body.body, function (err) {
             if (!err) {
-                const p = spawn('protoc', ['main.proto', '--js_out=.', '--cpp_out=.', '--java_out=.', '--python_out=.', '--ruby_out=.'], {
+                const p = spawn('protoc', [`${title}.proto`, ...targetList.map(v => `--${v.option}_out=.`)], {
                     cwd: folder
                 });
                 p.stdout.on('data', (data) => {
@@ -46,12 +48,6 @@ app.use((req, res) => {
                         output.on('close', function () {
                             console.log(archive.pointer() + ' total bytes');
                             console.log('archiver has been finalized and the output file descriptor has closed.');
-                            // res.sendFile(path.join(folder, 'target.zip'), {}, function(err){
-                            //     if (err) {
-                            //         throw err;
-                            //     }
-                            //     console.log('sent');
-                            // });
                         });
 
                         archive.on('error', function (err) {
@@ -59,60 +55,20 @@ app.use((req, res) => {
                         });
 
                         archive.pipe(res);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.java'],
-                                dest: 'java',
-                                dot: true
-                            }
-                        ]);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.h', '**/*.cc'],
-                                dest: 'cpp',
-                                dot: true
-                            }
-                        ]);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.js'],
-                                dest: 'js',
-                                dot: true
-                            }
-                        ]);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.py'],
-                                dest: 'python',
-                                dot: true
-                            }
-                        ]);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.rb'],
-                                dest: 'ruby',
-                                dot: true
-                            }
-                        ]);
-                        archive.bulk([
-                            {
-                                expand: true,
-                                cwd: folder,
-                                src: ['**/*.proto'],
-                                dest: 'proto',
-                                dot: true
-                            }
-                        ]);
+                        archive.bulk(targetList.map(v => ({
+                            expand: true,
+                            cwd: path.join(folder, v.srcPath || ''),
+                            src: v.src,
+                            dest: v.dest,
+                            dot: true
+                        })));
+                        archive.bulk({
+                            expand: true,
+                            cwd: folder,
+                            src: ['**/*.proto'],
+                            dest: '.',
+                            dot: true
+                        });
                         archive.finalize();
                     } else {
                         res.end();
